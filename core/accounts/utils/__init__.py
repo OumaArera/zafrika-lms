@@ -1,0 +1,1 @@
+from .admission_number_generator import generate_admission_number

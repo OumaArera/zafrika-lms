@@ -1,0 +1,40 @@
+.env
+ssl.crt
+/venv
+sprint.html
+
+# .gitignore
+
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+
+# Django migrations (ignore all except __init__.py)
+migrations/
+!migrations/__init__.py
+
+# Virtual environments
+venv/
+*.venv/
+env/
+*.env
+
+# Logs, media, and static files
+logs/
+media/
+staticfiles/
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE/editor configs
+.vscode/
+.idea/
+*.swp
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
