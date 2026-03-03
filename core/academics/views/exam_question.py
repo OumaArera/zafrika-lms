@@ -1,14 +1,15 @@
 from rest_framework import viewsets, mixins
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from ..models import Topic
-from ..serializers import (
-    TopicCreateUpdateSerializer,
-    TopicReadSerializer,
+from ..models import ExamQuestion
+from ..serializers.exam_question import (
+    ExamQuestionCreateUpdateSerializer,
+    ExamQuestionReadSerializer,
 )
-from ..filters.topic import TopicFilter
+from ..filters.exam_question import ExamQuestionFilter
 
-class TopicViewSet(
+
+class ExamQuestionViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
@@ -17,12 +18,9 @@ class TopicViewSet(
     viewsets.GenericViewSet,
 ):
 
-    queryset = Topic.objects.select_related(
-        "subject",
-        "author",
-        "author__user",
-    ).prefetch_related(
-        "exercises"
+    queryset = ExamQuestion.objects.select_related(
+        "subject_tag",
+        "subject_tag__subject",
     )
 
     filter_backends = [
@@ -30,16 +28,20 @@ class TopicViewSet(
         SearchFilter,
         OrderingFilter,
     ]
-    filterset_class = TopicFilter
 
-    # Case-insensitive search
+    filterset_class = ExamQuestionFilter
+
+    # Strong case-insensitive search
     search_fields = [
         "title",
-        "description",
+        "instructions",
+        "content",
     ]
 
     ordering_fields = [
         "created_at",
+        "grade",
+        "level",
         "title",
     ]
 
@@ -47,5 +49,5 @@ class TopicViewSet(
 
     def get_serializer_class(self):
         if self.action in ["create", "update", "partial_update"]:
-            return TopicCreateUpdateSerializer
-        return TopicReadSerializer
+            return ExamQuestionCreateUpdateSerializer
+        return ExamQuestionReadSerializer

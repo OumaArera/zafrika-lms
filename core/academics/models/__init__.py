@@ -3,3 +3,9 @@ from .teacher_subject import TeacherSubject
 from .student_subject import StudentSubject
 from .topic import Topic
 from .exercise import Exercise
+from .exercise_submission import ExerciseSubmission
+from .exercise_submission_image import SubmissionImage
+from .exam_question import ExamQuestion
+from .exam_submission import ExamSubmission
+from .exam_submission_image import ExamSubmissionImage
+from .exam_result import ExamResult

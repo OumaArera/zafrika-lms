@@ -5,3 +5,9 @@ from .topic import *
 from .teacher_nested import TeacherNestedSerializer
 from .topic_nested import TopicNestedSerializer
 from .exercise import *
+from .exercise_submission import *
+from .submission_image import SubmissionImageSerializer
+from .exam_question import ExamQuestionCreateUpdateSerializer
+from .exam_submission import *
+from .exam_submission_image import ExamSubmissionImageSerializer
+from .exam_result import *

@@ -48,8 +48,10 @@ class ExerciseNestedSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "title",
-            "level",
+            "instructions",
+            "content",
             "video_link",
+            "level",
             "created_at",
         ]
         read_only_fields = fields

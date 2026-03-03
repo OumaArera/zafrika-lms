@@ -42,8 +42,10 @@ class IsTeacher(RolePermission):
 
 
 class IsStudent(RolePermission):
-    allowed_roles = ["student", "parent"]
+    allowed_roles = ["student"]
 
+class IsStudentTeacher(RolePermission):
+    allowed_roles = ["student", "teacher", "teacher-admin",]
 
 class IsParent(RolePermission):
     allowed_roles = ["parent"]
