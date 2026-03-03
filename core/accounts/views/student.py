@@ -17,7 +17,7 @@ class StudentViewSet(
 
     queryset = Student.objects.select_related(
         "user", "parent"
-    ).all()
+    ).prefetch_related("subjects").all()
 
     permission_classes = [IsTeacherAdmin]
 

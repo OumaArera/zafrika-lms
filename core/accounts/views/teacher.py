@@ -15,7 +15,7 @@ class TeacherViewSet(
     viewsets.GenericViewSet,
 ):
 
-    queryset = Teacher.objects.select_related("user").all()
+    queryset = Teacher.objects.select_related("user").prefetch_related("subjects").all()
 
     permission_classes = [IsAdmin]
 
@@ -44,6 +44,6 @@ class TeacherViewSet(
     ordering = ["-created_at"]
 
     def get_serializer_class(self):
-        if self.action == "create":
+        if self.action in ["create", "update"]:
             return TeacherCreateSerializer
         return TeacherReadSerializer

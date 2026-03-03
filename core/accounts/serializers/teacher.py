@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.db import transaction
 from django.contrib.auth import get_user_model
 from ..models import Teacher
+from .nested_subject import SubjectNestedSerializer
 
 User = get_user_model()
 
@@ -22,7 +23,7 @@ class TeacherCreateSerializer(serializers.ModelSerializer):
             "sex",
             "county",
             "date_of_birth",
-            "tsc_number",
+            "tsc_number"
         ]
         read_only_fields = ["id"]
 
@@ -67,7 +68,9 @@ class TeacherReadSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source="user.username", read_only=True)
     phone_number = serializers.CharField(source="user.phone_number", read_only=True)
     email = serializers.CharField(source="user.email", read_only=True)
-
+    subjects = SubjectNestedSerializer(
+        many=True, read_only=True
+    )
     class Meta:
         model = Teacher
         fields = [
@@ -81,5 +84,6 @@ class TeacherReadSerializer(serializers.ModelSerializer):
             "county",
             "date_of_birth",
             "tsc_number",
+            "subjects",
             "created_at",
         ]

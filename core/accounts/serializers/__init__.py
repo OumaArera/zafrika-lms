@@ -4,3 +4,4 @@ from .auth_serializer import *
 from .parent import *
 from .student import StudentCreateSerializer
 from .user import UserReadSerializer
+from .nested_subject import SubjectNestedSerializer

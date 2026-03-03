@@ -6,7 +6,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('core.accounts.urls')),
-    # path('resource/api/v1/', include('apps.player.urls')),
+    path('api/v1/', include('core.academics.urls')),
     # path('bold-n-rooted/api/v1/', include('boldnrooted.urls'))
 ]
 

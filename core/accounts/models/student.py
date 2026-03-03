@@ -30,6 +30,11 @@ class Student(models.Model):
     date_of_birth = models.DateField()
     school_name = models.CharField(max_length=255)
     county = models.CharField(max_length=100)
+    subjects_enrolled = models.ManyToManyField(
+        "academics.Subject",
+        through="academics.StudentSubject",
+        related_name="student_subject"
+    )
     current_school_level = models.CharField(max_length=100)
     parental_consent = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

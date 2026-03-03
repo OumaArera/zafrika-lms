@@ -23,6 +23,11 @@ class Teacher(models.Model):
     county = models.CharField(max_length=100)
     date_of_birth = models.DateField()
     tsc_number = models.CharField(max_length=50, unique=True)
+    subjects = models.ManyToManyField(
+        "academics.Subject",
+        through="academics.TeacherSubject",
+        related_name="subjects_teaching"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

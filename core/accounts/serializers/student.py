@@ -3,6 +3,7 @@ from django.db import transaction
 from django.contrib.auth import get_user_model
 from ..models import Student, Parent
 from ..utils import generate_admission_number
+from .nested_subject import SubjectNestedSerializer
 
 User = get_user_model()
 
@@ -11,6 +12,7 @@ class StudentCreateSerializer(serializers.ModelSerializer):
 
     parent_id = serializers.UUIDField(write_only=True)
     phone_number = serializers.CharField(write_only=True)
+    subjects = SubjectNestedSerializer(many=True, source='subjects_enrolled', read_only=True)
 
     class Meta:
         model = Student
@@ -28,8 +30,9 @@ class StudentCreateSerializer(serializers.ModelSerializer):
             "county",
             "current_school_level",
             "parental_consent",
+            "subjects",
         ]
-        read_only_fields = ["id", "admission_number"]
+        read_only_fields = ["id", "admission_number", "subjects",]
 
     # ---------- FIELD VALIDATION ----------
 
