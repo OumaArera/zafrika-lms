@@ -4,26 +4,25 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     "159.89.235.222",
-    "goalkeepers.edmondserenity.com",
+    "zafrika-lms.edmondserenity.com",
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://goalkeepersalliance.org",
-    "https://dashboard.goalkeepersalliance.org",
-    "https://welfare.goalkeepersalliance.org",
+   "https://honeyourmarks.com",
+   "https://digital.honeyourmarks.com",
 ]
+
+
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("PROD_DB_NAME"),
-        "USER": config("PROD_DB_USER"),
-        "PASSWORD": config("PROD_DB_PASSWORD"),
-        "HOST": config("PROD_DB_HOST", default="localhost"),
-        "PORT": config("PROD_DB_PORT", default="5432"),
-        "OPTIONS": {
-            "sslmode": "require",
-        },
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('PROD_DB_NAME'),
+        'USER': config('PROD_DB_USER'),
+        'PASSWORD': config('PROD_DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
+
     }
 }
 
