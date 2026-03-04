@@ -2,9 +2,8 @@ from rest_framework import viewsets, mixins
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from ..models import Student
-from ..serializers import StudentCreateSerializer
+from ..serializers import *
 from ..filters import StudentFilter
-from ..middleware import IsTeacherAdmin
 
 
 class StudentViewSet(
@@ -17,9 +16,10 @@ class StudentViewSet(
 
     queryset = Student.objects.select_related(
         "user", "parent"
-    ).prefetch_related("subjects").all()
-
-    permission_classes = [IsTeacherAdmin]
+    ).prefetch_related(
+        "subjects_enrolled",
+        "groups",
+    ).all()
 
     serializer_class = StudentCreateSerializer
 
@@ -45,3 +45,8 @@ class StudentViewSet(
     ]
 
     ordering = ["-created_at"]
+
+    def get_serializer_class(self):
+        if self.action in ["create", "update", "partial_update"]:
+            return StudentCreateSerializer
+        return StudentReadSerializer

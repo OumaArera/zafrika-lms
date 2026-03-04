@@ -75,8 +75,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     role = models.CharField(max_length=20, choices=Role.choices)
     username = models.CharField(max_length=100, unique=True)
-    email = models.EmailField(blank=True, null=True, unique=True)
-    phone_number = models.CharField(max_length=20, unique=True)
+    email = models.EmailField(blank=True, null=True)
+    phone_number = models.CharField(max_length=20)
     is_verified = models.BooleanField(default=True)
     must_change_password = models.BooleanField(default=False)
     status = models.CharField(

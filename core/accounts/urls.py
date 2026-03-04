@@ -8,6 +8,8 @@ router.register("students", StudentViewSet)
 router.register("teachers", TeacherViewSet)
 router.register("parents", ParentViewSet)
 router.register("users", UserViewSet)
+router.register(r"groups", GroupViewSet, basename="groups")
+router.register(r"virtual-classes", VirtualClassViewSet, basename="virtual-classes")
 
 urlpatterns = [
     path("auth/login/", LoginView.as_view()),
@@ -16,4 +18,5 @@ urlpatterns = [
     path("auth/create-admin/", CreateAdminView.as_view()),
     path("auth/block/<uuid:user_id>/", BlockUserView.as_view()),
     path("auth/unblock/<uuid:user_id>/", UnblockUserView.as_view()),
+    path("teacher/dashboard/stats/", TeacherDashboardStatsView.as_view())
 ] + router.urls

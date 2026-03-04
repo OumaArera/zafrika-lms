@@ -3,7 +3,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from ..models import Teacher
 from ..serializers import TeacherCreateSerializer, TeacherReadSerializer
-from ..middleware import IsAdmin
 from ..filters import TeacherFilter
 
 
@@ -17,7 +16,6 @@ class TeacherViewSet(
 
     queryset = Teacher.objects.select_related("user").prefetch_related("subjects").all()
 
-    permission_classes = [IsAdmin]
 
     filter_backends = [
         DjangoFilterBackend,

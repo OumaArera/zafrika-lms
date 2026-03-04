@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from ..models import Student, Parent
 from ..utils import generate_admission_number
 from .nested_subject import SubjectNestedSerializer
+from .nested import GroupNestedSerializer
 
 User = get_user_model()
 
@@ -13,6 +14,7 @@ class StudentCreateSerializer(serializers.ModelSerializer):
     parent_id = serializers.UUIDField(write_only=True)
     phone_number = serializers.CharField(write_only=True)
     subjects = SubjectNestedSerializer(many=True, source='subjects_enrolled', read_only=True)
+ 
 
     class Meta:
         model = Student
@@ -77,3 +79,36 @@ class StudentCreateSerializer(serializers.ModelSerializer):
         )
 
         return student
+
+
+class StudentReadSerializer(serializers.ModelSerializer):
+
+    subjects = SubjectNestedSerializer(
+        many=True,
+        source="subjects_enrolled",
+        read_only=True
+    )
+
+    groups = GroupNestedSerializer(
+        many=True,
+        read_only=True
+    )
+
+    class Meta:
+        model = Student
+        fields = [
+            "id",
+            "admission_number",
+            "first_name",
+            "middle_names",
+            "last_name",
+            "sex",
+            "date_of_birth",
+            "school_name",
+            "county",
+            "current_school_level",
+            "subjects",
+            "groups",  
+            "created_at",
+            "updated_at",
+        ]
