@@ -10,6 +10,7 @@ router.register("parents", ParentViewSet)
 router.register("users", UserViewSet)
 router.register(r"groups", GroupViewSet, basename="groups")
 router.register(r"virtual-classes", VirtualClassViewSet, basename="virtual-classes")
+router.register(r"subscriptions", SubscriptionViewSet, basename="virtual-subscriptions")
 
 urlpatterns = [
     path("auth/login/", LoginView.as_view()),
