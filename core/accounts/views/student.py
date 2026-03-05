@@ -1,6 +1,7 @@
 from rest_framework import viewsets, mixins
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from ..models import Student
 from ..serializers import *
 from ..filters import StudentFilter
@@ -19,7 +20,7 @@ class StudentViewSet(
     ).prefetch_related(
         "subjects_enrolled",
         "groups",
-    ).all()
+    )
 
     serializer_class = StudentCreateSerializer
 
@@ -50,3 +51,12 @@ class StudentViewSet(
         if self.action in ["create", "update", "partial_update"]:
             return StudentCreateSerializer
         return StudentReadSerializer
+
+    def get_permissions(self):
+        """
+        Allow unauthenticated access only for student creation.
+        All other actions require authentication.
+        """
+        if self.action == "create":
+            return [AllowAny()]
+        return [IsAuthenticated()]
