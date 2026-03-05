@@ -11,10 +11,13 @@ User = get_user_model()
 
 class StudentCreateSerializer(serializers.ModelSerializer):
 
-    parent_id = serializers.UUIDField(write_only=True)
+    parent_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
     phone_number = serializers.CharField(write_only=True)
-    subjects = SubjectNestedSerializer(many=True, source='subjects_enrolled', read_only=True)
- 
+    subjects = SubjectNestedSerializer(
+        many=True,
+        source='subjects_enrolled',
+        read_only=True
+    )
 
     class Meta:
         model = Student
@@ -34,29 +37,34 @@ class StudentCreateSerializer(serializers.ModelSerializer):
             "parental_consent",
             "subjects",
         ]
-        read_only_fields = ["id", "admission_number", "subjects",]
+        read_only_fields = ["id", "admission_number", "subjects"]
 
     # ---------- FIELD VALIDATION ----------
 
     def validate_parent_id(self, value):
-        if not Parent.objects.filter(id=value).exists():
+        if value and not Parent.objects.filter(id=value).exists():
             raise serializers.ValidationError("Parent not found.")
         return value
 
-    def validate_parental_consent(self, value):
-        if not value:
-            raise serializers.ValidationError("Parental consent required.")
-        return value
+    # Optional: remove forced parental consent
+    # If you still want to enforce it, keep validation.
+    # Otherwise remove this method.
+    # def validate_parental_consent(self, value):
+    #     if not value:
+    #         raise serializers.ValidationError("Parental consent required.")
+    #     return value
 
     # ---------- ATOMIC CREATION ----------
 
     @transaction.atomic
     def create(self, validated_data):
 
-        parent_id = validated_data.pop("parent_id")
+        parent_id = validated_data.pop("parent_id", None)
         phone_number = validated_data.pop("phone_number")
 
-        parent = Parent.objects.select_for_update().get(id=parent_id)
+        parent = None
+        if parent_id:
+            parent = Parent.objects.select_for_update().get(id=parent_id)
 
         admission_number = generate_admission_number()
 
@@ -73,7 +81,7 @@ class StudentCreateSerializer(serializers.ModelSerializer):
 
         student = Student.objects.create(
             user=user,
-            parent=parent,
+            parent=parent,  # Now optional
             admission_number=admission_number,
             **validated_data,
         )

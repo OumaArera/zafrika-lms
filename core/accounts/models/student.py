@@ -19,7 +19,9 @@ class Student(models.Model):
     parent = models.ForeignKey(
         Parent,
         on_delete=models.CASCADE,
-        related_name="students"
+        related_name="students",
+        blank=True, 
+        null=True
     )
 
     admission_number = models.CharField(max_length=50, unique=True)
