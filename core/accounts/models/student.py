@@ -18,7 +18,7 @@ class Student(models.Model):
 
     parent = models.ForeignKey(
         Parent,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name="students",
         blank=True, 
         null=True
