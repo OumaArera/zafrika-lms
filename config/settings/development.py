@@ -10,16 +10,18 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 DATABASES = {
-    "default": {
+    'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DEV_DB_NAME'),
-        'USER': config('DEV_DB_USER'),
-        'PASSWORD': config('DEV_DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT'),
-
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST', default='localhost'),
+        'PORT': config('DB_PORT', default='5432'),
+        'OPTIONS': {
+            'sslmode': 'require',
+            'sslcert': config('SSL_CERT_PATH', default=''),
+        },
     }
 }
-
 # Development email (prints to console)
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

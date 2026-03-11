@@ -10,3 +10,4 @@ from .nested import *
 from .student_stats import TeacherDashboardStatsSerializer
 from .virtual_class import *
 from .subscription import SubscriptionSerializer
+from .subscription_plan import SubscriptionPlanSerializer
