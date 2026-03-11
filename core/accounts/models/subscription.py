@@ -1,45 +1,36 @@
 import uuid
 from django.db import models
 from django.utils import timezone
-from ...academics.models import Subject, Topic
-from ..models import VirtualClass, Student
+from ..models import Student
+from .subscription_plan import SubscriptionPlan
 
 
 class Subscription(models.Model):
 
-    class Tier(models.TextChoices):
-        FULL = "full", "Full Access"
-        PARTIAL = "partial", "Partial Access"
-
-    class Duration(models.TextChoices):
-        WEEKLY = "weekly", "Weekly"
-        MONTHLY = "monthly", "Monthly"
-        ANNUAL = "annual", "Annual"
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
     student = models.ForeignKey(
         Student,
         on_delete=models.CASCADE,
         related_name="subscriptions"
     )
-    tier = models.CharField(max_length=20, choices=Tier.choices)
-    duration = models.CharField(max_length=20, choices=Duration.choices)
+
+    plan = models.ForeignKey(
+        SubscriptionPlan,
+        on_delete=models.PROTECT,
+        related_name="subscriptions",
+        null=True,
+        blank=True
+    )
+
     start_date = models.DateField(default=timezone.localdate)
+
     end_date = models.DateField(blank=True, null=True)
+
     active = models.BooleanField(default=True)
 
-    # Access control flags
-    notes_access = models.BooleanField(default=True)
-    exercises_access = models.BooleanField(default=True)
-    exams_access = models.BooleanField(default=True)
-    virtual_classes_access = models.BooleanField(default=True)
-
-    # Optional: fine-grained access
-    subjects = models.ManyToManyField(Subject, blank=True, related_name="subscriptions")
-    topics = models.ManyToManyField(Topic, blank=True, related_name="subscriptions")
-    virtual_classes = models.ManyToManyField(VirtualClass, blank=True, related_name="subscriptions")
-
     created_at = models.DateTimeField(auto_now_add=True)
+
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -47,17 +38,24 @@ class Subscription(models.Model):
             models.Index(fields=["student", "active"]),
             models.Index(fields=["start_date", "end_date"]),
         ]
+        ordering = ["-created_at"]
 
     def save(self, *args, **kwargs):
-        # Automatically compute end_date based on duration
+
         if not self.end_date:
-            if self.duration == self.Duration.WEEKLY:
+            if self.plan.duration == "daily":
+                self.end_date = self.start_date + timezone.timedelta(days=1)
+
+            elif self.plan.duration == "weekly":
                 self.end_date = self.start_date + timezone.timedelta(weeks=1)
-            elif self.duration == self.Duration.MONTHLY:
+
+            elif self.plan.duration == "monthly":
                 self.end_date = self.start_date + timezone.timedelta(days=30)
-            elif self.duration == self.Duration.ANNUAL:
+
+            elif self.plan.duration == "annual":
                 self.end_date = self.start_date + timezone.timedelta(days=365)
+
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.student.first_name} - {self.tier} ({self.duration})"
+        return f"{self.student.first_name} - {self.plan.name}"
