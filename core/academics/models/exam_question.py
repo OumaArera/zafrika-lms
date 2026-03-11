@@ -17,6 +17,8 @@ class ExamQuestion(models.Model):
         GRADE_10 = "grade_10", "Grade 10"
         GRADE_11 = "grade_11", "Grade 11"
         GRADE_12 = "grade_12", "Grade 12"
+        FORM_3 = "form_3", "Form 3"
+        FORM_4 = "form_4", "Form 4"
 
     class LevelChoices(models.TextChoices):
         SCOUT = "scout", "Scout"

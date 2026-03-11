@@ -20,5 +20,6 @@ urlpatterns = [
     path("auth/create-admin/", CreateAdminView.as_view()),
     path("auth/block/<uuid:user_id>/", BlockUserView.as_view()),
     path("auth/unblock/<uuid:user_id>/", UnblockUserView.as_view()),
-    path("teacher/dashboard/stats/", TeacherDashboardStatsView.as_view())
+    path("teacher/dashboard/stats/", TeacherDashboardStatsView.as_view()),
+    path("plan-stats/", PlanStatsView.as_view(), name="plan-stats"),
 ] + router.urls

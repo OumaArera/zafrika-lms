@@ -29,9 +29,9 @@ Student dashboard : 3 queries (overall aggregate | per-grade | per-subject×grad
 # analytics/queries.py
 # ============================================================
 
-from django.db.models import Avg, Count, F, Q
-from django.db.models.functions import Round
 
+from django.db.models import Avg, Count, ExpressionWrapper, F, FloatField, Q
+from django.db.models.functions import Round
 from ..models import ExamQuestion, ExamSubmission
 from ...accounts.models import Student
 
@@ -53,27 +53,42 @@ LEVEL_COUNT_ANNOTATIONS = dict(
 )
 
 
-def _raw_avg_for_level(level: str):
-    """AVG(result__score) scoped to one exam level. Returns None when no results exist."""
+
+def _pct_avg_expr(extra_filter: Q = Q()) -> Round:
+    """
+    AVG((score / out_of) * 100) — percentage-normalised average.
+    Submissions without a linked ExamResult are excluded via result__isnull=False.
+    Submissions where out_of is 0 are also excluded to avoid division by zero.
+    """
+    safe_filter = extra_filter & Q(result__isnull=False) & Q(result__out_of__gt=0)
     return Round(
-        Avg("result__score", filter=Q(exam__level=level, result__isnull=False)),
+        Avg(
+            ExpressionWrapper(
+                F("result__score") / F("result__out_of") * 100,
+                output_field=FloatField(),
+            ),
+            filter=safe_filter,
+        ),
         2,
     )
 
 
+def _pct_avg_for_level(level: str) -> Round:
+    """Percentage-normalised AVG scoped to one exam level."""
+    return _pct_avg_expr(extra_filter=Q(exam__level=level))
+
+
+# Replace the old LEVEL_AVG_ANNOTATIONS and OVERALL_AVG_ANNOTATION dicts:
+
 LEVEL_AVG_ANNOTATIONS = dict(
-    scout_avg_score=_raw_avg_for_level(ExamQuestion.LevelChoices.SCOUT),
-    explorer_avg_score=_raw_avg_for_level(ExamQuestion.LevelChoices.EXPLORER),
-    legend_avg_score=_raw_avg_for_level(ExamQuestion.LevelChoices.LEGEND),
+    scout_avg_score=_pct_avg_for_level(ExamQuestion.LevelChoices.SCOUT),
+    explorer_avg_score=_pct_avg_for_level(ExamQuestion.LevelChoices.EXPLORER),
+    legend_avg_score=_pct_avg_for_level(ExamQuestion.LevelChoices.LEGEND),
 )
 
 OVERALL_AVG_ANNOTATION = dict(
-    overall_avg_score=Round(
-        Avg("result__score", filter=Q(result__isnull=False)),
-        2,
-    )
+    overall_avg_score=_pct_avg_expr(),
 )
-
 
 # ------------------------------------------------------------------
 # 1. Teacher Dashboard — system-wide stats
@@ -214,6 +229,7 @@ def get_teacher_dashboard_stats(grade: str | None = None) -> dict:
     # Use positional string paths ("student__id") NOT keyword aliases
     # (student_id=F("student__id")) — the latter conflicts with the real FK
     # column `student_id` on ExamSubmission and raises ValueError at runtime.
+    # Q4 — Top 20 students by avg percentage score
     top_students_qs = (
         base_qs
         .values(
@@ -225,7 +241,14 @@ def get_teacher_dashboard_stats(grade: str | None = None) -> dict:
             total_submissions=Count("id"),
             marked_submissions=Count("id", filter=Q(is_marked=True)),
             overall_avg_score=Round(
-                Avg("result__score", filter=Q(result__isnull=False)), 2
+                Avg(
+                    ExpressionWrapper(
+                        F("result__score") / F("result__out_of") * 100,
+                        output_field=FloatField(),
+                    ),
+                    filter=Q(result__isnull=False, result__out_of__gt=0),
+                ),
+                2,
             ),
         )
         .order_by(F("overall_avg_score").desc(nulls_last=True))[:20]
@@ -352,6 +375,7 @@ def get_student_dashboard_stats(student_id) -> dict:
     ]
 
     # Q3 — Per subject-tag × grade (GROUP BY subject_tag + grade)
+    # Q3 — Per subject-tag × grade
     per_subject_qs = (
         base_qs
         .values(
@@ -362,7 +386,14 @@ def get_student_dashboard_stats(student_id) -> dict:
         .annotate(
             total_submissions=Count("id"),
             avg_score=Round(
-                Avg("result__score", filter=Q(result__isnull=False)), 2
+                Avg(
+                    ExpressionWrapper(
+                        F("result__score") / F("result__out_of") * 100,
+                        output_field=FloatField(),
+                    ),
+                    filter=Q(result__isnull=False, result__out_of__gt=0),
+                ),
+                2,
             ),
             **LEVEL_COUNT_ANNOTATIONS,
         )
@@ -579,23 +610,3 @@ class StudentDashboardStatsView(GenericAPIView):
         serializer = self.get_serializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-# ============================================================
-# analytics/urls.py
-# ============================================================
-#
-# from django.urls import path
-# from .views import TeacherDashboardStatsView, StudentDashboardStatsView
-#
-# urlpatterns = [
-#     path(
-#         "dashboard/teacher/stats/",
-#         TeacherDashboardStatsView.as_view(),
-#         name="teacher-dashboard-stats",
-#     ),
-#     path(
-#         "dashboard/student/<uuid:student_id>/stats/",
-#         StudentDashboardStatsView.as_view(),
-#         name="student-dashboard-stats",
-#     ),
-# ]

@@ -6,5 +6,5 @@ from .user import UserViewSet
 from .group import GroupViewSet
 from .student_stats import TeacherDashboardStatsView
 from .virtual_class import VirtualClassViewSet
-from .subscription import SubscriptionViewSet
+from .subscription import *
 from .subscription_plan import SubscriptionPlanViewSet
