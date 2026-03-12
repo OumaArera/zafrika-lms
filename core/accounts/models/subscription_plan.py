@@ -33,6 +33,8 @@ class SubscriptionPlan(models.Model):
     exercises_access = models.BooleanField(default=True)
     exams_access = models.BooleanField(default=True)
     virtual_classes_access = models.BooleanField(default=True)
+    submit_exam_questions_attempts = models.BooleanField(default=False)
+    submit_exercise_attempts = models.BooleanField(default=False)
 
     active = models.BooleanField(default=True)
 

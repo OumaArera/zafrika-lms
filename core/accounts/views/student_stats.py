@@ -1,4 +1,4 @@
-from django.db.models import Count, Sum, Avg
+from django.db.models import Sum, Avg, F, FloatField, ExpressionWrapper
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -25,16 +25,24 @@ class TeacherDashboardStatsView(APIView):
         total_exercise_submissions = ExerciseSubmission.objects.count()
         total_exam_results = ExamResult.objects.count()
 
-        # Score aggregations (single DB hit)
-        score_aggregation = ExamResult.objects.aggregate(
+        # Compute percentage for each result
+        percentage_expression = ExpressionWrapper(
+            (F("score") * 100.0) / F("out_of"),
+            output_field=FloatField()
+        )
+
+        # Aggregations
+        score_aggregation = ExamResult.objects.annotate(
+            percentage=percentage_expression
+        ).aggregate(
             total_score=Sum("score"),
             total_out_of=Sum("out_of"),
-            average_score=Avg("score"),
+            average_percentage=Avg("percentage"),
         )
 
         total_score = score_aggregation["total_score"] or 0
         total_out_of = score_aggregation["total_out_of"] or 0
-        average_score = score_aggregation["average_score"] or 0
+        average_percentage = score_aggregation["average_percentage"] or 0
 
         overall_percentage = 0
         if total_out_of > 0:
@@ -48,7 +56,7 @@ class TeacherDashboardStatsView(APIView):
             "total_exams_marked": total_exams_marked,
             "total_exam_results": total_exam_results,
             "total_exercise_submissions": total_exercise_submissions,
-            "average_exam_score": round(average_score, 2),
+            "average_exam_score": round(average_percentage, 2),
             "overall_exam_percentage": round(overall_percentage, 2),
         }
 

@@ -18,5 +18,7 @@ class SubscriptionPlanSerializer(serializers.ModelSerializer):
             "exercises_access",
             "exams_access",
             "virtual_classes_access",
+            "submit_exam_questions_attempts",
+            "submit_exercise_attempts",
             "active",
         ]
