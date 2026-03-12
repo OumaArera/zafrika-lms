@@ -43,11 +43,14 @@ class ExerciseReadSerializer(serializers.ModelSerializer):
 
 class ExerciseNestedSerializer(serializers.ModelSerializer):
 
+    topic_id = serializers.UUIDField(source="topic.id", read_only=True)
+
     class Meta:
         model = Exercise
         fields = [
             "id",
             "title",
+            "topic_id",
             "instructions",
             "content",
             "video_link",

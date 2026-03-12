@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.db import transaction
 from ..models import ExerciseSubmission, SubmissionImage
 from .submission_image import SubmissionImageSerializer
+from .exercise import ExerciseNestedSerializer
 
 
 class ExerciseSubmissionCreateSerializer(serializers.ModelSerializer):
@@ -51,6 +52,7 @@ class ExerciseSubmissionCreateSerializer(serializers.ModelSerializer):
 class ExerciseSubmissionReadSerializer(serializers.ModelSerializer):
 
     images = SubmissionImageSerializer(many=True, read_only=True)
+    exercise = ExerciseNestedSerializer(read_only=True)
 
     class Meta:
         model = ExerciseSubmission
