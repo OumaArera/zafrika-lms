@@ -1,5 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.timezone import now
 from rest_framework.decorators import action
 from ..models import *
@@ -15,6 +16,8 @@ class ChallengeEnrollmentViewSet(viewsets.ModelViewSet):
     ).prefetch_related(
         "progress"
     )
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["status", "challenge__created_by"]
 
     def get_queryset(self):
         user = self.request.user
