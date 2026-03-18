@@ -9,3 +9,10 @@ from .exam_question import ExamQuestion
 from .exam_submission import ExamSubmission
 from .exam_submission_image import ExamSubmissionImage
 from .exam_result import ExamResult
+from .challenge import Challenge
+from .challenge_day import ChallengeDay
+from .challenge_enrollment import ChallengeEnrollment
+from .challenge_day_progress import ChallengeDayProgress
+from .challenge_note import ChallengeNote
+from .challenge_assignment import ChallengeAssignment
+from .challenge_assignment_submission import ChallengeSubmission

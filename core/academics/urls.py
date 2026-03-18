@@ -14,6 +14,15 @@ router.register(r"exam-questions", ExamQuestionViewSet, basename="exam-questions
 router.register(r"exam-submissions", ExamSubmissionViewSet, basename="exam-submissions")
 router.register(r"exam-results", ExamResultViewSet, basename="exam-results")
 
+router.register(r"challenges", ChallengeViewSet, basename="challenges")
+router.register(r"challenge-days", ChallengeDayViewSet, basename="challenge-days")
+router.register(r"challenge-assignments", ChallengeAssignmentViewSet, basename="challenge-assignments")
+router.register(r"challenge-enrollments", ChallengeEnrollmentViewSet)
+router.register(r"challenge-submissions", ChallengeSubmissionViewSet)
+router.register(r"challenge-notes", ChallengeNoteViewSet)
+router.register(r"challenge-progress", ChallengeDayProgressViewSet)
+
+
 # urlpatterns = router.urls
 
 urlpatterns = [
@@ -36,5 +45,10 @@ urlpatterns = [
         "dashboard/student/<uuid:student_id>/exercises/",
         StudentExerciseDashboardView.as_view(),
         name="student-exercise-dashboard",
+    ),
+    path(
+        "challenge/analytics/",
+        ChallengeAnalyticsView.as_view(),
+        name="challenge-analytics",
     ),
 ]+ router.urls

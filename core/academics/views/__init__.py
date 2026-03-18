@@ -9,4 +9,12 @@ from .exam_submission import ExamSubmissionViewSet
 from .exam_result import ExamResultViewSet
 from .exam_analytics import *
 from .exercise_analytics import *
+from .challenge import *
+from .challenge_enrollment import ChallengeEnrollmentViewSet
+from .challenge_note import ChallengeNoteViewSet
+from .challenge_submission import ChallengeSubmissionViewSet
+from .challenge_analytic import ChallengeAnalyticsView
+from .challenge_day import ChallengeDayViewSet
+from .challenge_assignment import ChallengeAssignmentViewSet
+from .challenge_progress import ChallengeDayProgressViewSet
 

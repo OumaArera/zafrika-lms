@@ -11,3 +11,4 @@ from .exam_question import ExamQuestionCreateUpdateSerializer
 from .exam_submission import *
 from .exam_submission_image import ExamSubmissionImageSerializer
 from .exam_result import *
+from .challenge import *

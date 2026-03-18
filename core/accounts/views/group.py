@@ -29,6 +29,7 @@ class GroupViewSet(
 
     filterset_fields = [
         "name",
+        "students",
     ]
 
     search_fields = [
